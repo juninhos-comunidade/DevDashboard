@@ -13,10 +13,15 @@ def health():
 def health_db():
     try:
         with engine.connect() as con:
-            con.execute("SELECTED 1")
+            con.execute(text("SELECT 1"))
+
+        return {
+            "status": "Banco de dados conectado"
+        }    
 
     except Exception as e:
         return {
             "status": "Banco de dados disconectado",
             "Erro": str(e)
         }
+    

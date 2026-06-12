@@ -1,26 +1,40 @@
+from sqlalchemy.orm import Session
+
 from app.models.user_models import User
 from app.repositories.user_repository import UserRepository
-from app.database.base import Base
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
-import os
+from app.schemas.user_schema import UserCreate
+from app.core.security import hash_password
 
 
 class UserService:
+
     def __init__(self):
-        load_dotenv()
-        DATABASE_URL = os.getenv("DATABASE_URL")
-        engine = create_engine(DATABASE_URL)
-        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-        self.session = SessionLocal()
-        self.user_repository = UserRepository(self.session)
+        self.repository = UserRepository()
 
-    def create_user(self, name: str, email: str, password_hash: str) -> User:
-        return self.user_repository.create_user(name, email, password_hash)
+    def create_user(
+        self,
+        db: Session,
+        user_data: UserCreate
+    ):
+        existing_user = self.repository.find_by_email(
+            db,
+            user_data.email
+        )
 
-    def get_user_by_email(self, email: str) -> User | None:
-        return self.user_repository.get_user_by_email(email)
-    
-    def get_user_by_id(self, user_id: int) -> User | None:
-        return self.user_repository.get_user_by_id(user_id)
+        if existing_user:
+            raise ValueError(
+                "Email já cadastrado"
+            )
+
+        user = User(
+            name=user_data.name,
+            email=user_data.email,
+            password_hash=hash_password(
+                user_data.password
+            )
+        )
+
+        return self.repository.create(
+            db,
+            user
+        )

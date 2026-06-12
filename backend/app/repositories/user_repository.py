@@ -1,4 +1,4 @@
-from sqlalchemy import Session
+from sqlalchemy.orm import Session
 from app.models.user_models import User
 from app.database.base import Base
 

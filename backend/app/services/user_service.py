@@ -8,8 +8,8 @@ from app.core.security import hash_password
 
 class UserService:
 
-    def __init__(self):
-        self.repository = UserRepository()
+    def __init__(self, db: Session):
+        self.repository = UserRepository(db)
 
     def create_user(
         self,

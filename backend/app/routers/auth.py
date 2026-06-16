@@ -3,7 +3,7 @@ from fastapi import Depends
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from app.database.database import get_db
+from app.database.criar_database import get_db
 from app.schemas.user_schema import (
     UserCreate,
     UserResponse

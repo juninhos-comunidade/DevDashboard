@@ -17,7 +17,7 @@ class UserRepository:
         self.session.refresh(new_user)
         return new_user
 
-    def get_user_by_email(self, email: str) -> User | None:
+    def find_by_email(self, email: str) -> User | None:
         return self.session.query(User).filter(User.email == email).first()
     
     def get_user_by_id(self, user_id: int) -> User | None:

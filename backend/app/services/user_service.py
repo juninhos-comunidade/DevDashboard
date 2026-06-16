@@ -13,11 +13,9 @@ class UserService:
 
     def create_user(
         self,
-        db: Session,
         user_data: UserCreate
     ):
         existing_user = self.repository.find_by_email(
-            db,
             user_data.email
         )
 
@@ -26,15 +24,12 @@ class UserService:
                 "Email já cadastrado"
             )
 
-        user = User(
+        print("PASSWORD:", user_data.password)
+        print("LEN:", len(user_data.password))
+        password_hashc = hash_password(user_data.password)
+
+        return self.repository.create_user(
             name=user_data.name,
             email=user_data.email,
-            password_hash=hash_password(
-                user_data.password
-            )
-        )
-
-        return self.repository.create(
-            db,
-            user
+            password_hash=password_hashc
         )

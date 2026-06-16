@@ -2,11 +2,8 @@ from fastapi import APIRouter
 from fastapi import Depends
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from app.schemas.auth_schema import (
-    LoginRequest,
-    TokenResponse
-)
-
+from app.schemas.auth_schema import (LoginRequest,TokenResponse)
+from app.core.auth_dependency import get_current_user
 from app.database.criar_database import get_db
 from app.schemas.user_schema import (
     UserCreate,
@@ -45,4 +42,9 @@ def login(data: LoginRequest,db: Session = Depends(get_db)):
         )
     except ValueError as v:
         raise HTTPException(status_code=401, detail=str(v))
-          
+    
+@router.get("/me")    
+def user_me(current=Depends(get_current_user)):
+    return {
+        "User_id": current
+    }          

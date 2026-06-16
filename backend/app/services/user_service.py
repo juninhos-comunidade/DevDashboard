@@ -4,6 +4,8 @@ from app.models.user_models import User
 from app.repositories.user_repository import UserRepository
 from app.schemas.user_schema import UserCreate
 from app.core.security import hash_password
+from app.core.security import verify_password
+from app.core.jwt import create_access_token
 
 
 class UserService:
@@ -33,3 +35,30 @@ class UserService:
             email=user_data.email,
             password_hash=password_hashc
         )
+    
+    def authenticate_user(self,email: str,password: str):
+        user = self.repository.find_by_email(email)
+
+        if not user:
+            raise ValueError(
+                "Credenciais inválidas"
+            )
+
+        if not verify_password(
+            password,
+            user.password_hash
+        ):
+            raise ValueError(
+                "Credenciais inválidas"
+            )
+
+        token = create_access_token(
+            {
+                "sub": str(user.id)
+            }
+        )
+
+        return {
+            "access_token": token,
+            "token_type": "bearer"
+        }

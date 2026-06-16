@@ -44,7 +44,12 @@ def login(data: LoginRequest,db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail=str(v))
     
 @router.get("/me")    
-def user_me(current=Depends(get_current_user)):
+def user_me(current=Depends(get_current_user), db: Session = Depends(get_db)):
+    service = UserService(db)
+    user = service.get_user_by_id(int(current))
+
     return {
-        "User_id": current
+        "id":user.id,
+        "name": user.name,
+        "email":user.email
     }          

@@ -1,8 +1,13 @@
-from fastapi import FastAPI
+'''from fastapi import FastAPI
 from sqlalchemy import text
 from app.database.criar_database import engine
+from app.database.base import Base
+
+from app.models.user_models import User
 
 app = FastAPI()
+
+Base.metadata.create_all(bind=engine)
 
 @app.get("/health")
 def health():
@@ -24,4 +29,13 @@ def health_db():
             "status": "Banco de dados disconectado",
             "Erro": str(e)
         }
-    
+   '''
+from app.routers.auth import router
+from fastapi import FastAPI
+from app.database.base import Base
+from app.database.criar_database import engine
+
+app = FastAPI()
+Base.metadata.create_all(bind=engine)
+app.include_router(router)
+
